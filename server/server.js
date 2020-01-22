@@ -1,7 +1,9 @@
 require('dotenv').config();
 
+const axios = require('axios');
 const express = require('express');
 const morgan = require('morgan');
+
 
 const app = express();
 
@@ -9,24 +11,18 @@ app.use(morgan('dev'));
 app.use(express.static('dist'));
 app.use(express.static('public'));
 
-app.get('/movieInfo/:inputValue', (req, res) => {
-    axios({
-      url: `http://omdbapi.com/?s=${req.params.inputValue}&apikey=${process.env.OMDB_API_KEY}`,
-      method: 'get'
-    })
-    .then((response) => {
-      res.send(response.data);
-    });
-  });
+app.get('/movies/:title', (req, res) => {
+  movieTitle = req.params.title;
+  return axios.get(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${movieTitle}`)
+    .then(response => res.send(response.data))
+    .catch(err => console.log(err))
+});
 
 app.get('/movie/:id', (req, res) => {
-    axios({
-        url: `http://omdbapi.com/?i=${req.params.id}&apikey=${process.env.OMDB_API_KEY}`,
-        method: 'get'
-    })
-    .then((response) => {
-        res.send(response.data);
-    });
+  moviesID = req.params.id;
+  return axios.get(`http://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&i=${moviesID}`)
+  .then(response => res.send(response.data))
+  .catch(err => console.log(err));
 });
 
 module.exports = app;
